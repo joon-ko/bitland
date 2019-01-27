@@ -1,47 +1,54 @@
-let xPos = 6;
-let yPos = 6;
 let keysDown = {};
-updateMap();
+let testPlayer = undefined;
 
+axios.get('/api/player')
+	.then((res) => {
+		testPlayer = res.data;
+		updateMap();
+	})
+	.catch((err) => console.log(err));
+
+// handle movement with arrow keys
 document.addEventListener('keydown', (e) => {
 	if (!(e.keyCode in keysDown)) {
 		keysDown[e.keyCode] = true;
 		switch (e.keyCode) {
 			case 37: // left arrow
-				yPos -= 1;
-				updateMap();
+				move('left');
 				break;
 			case 38: // up arrow
-				xPos -= 1;
-				updateMap();
+				move('up');
 				break;
 			case 39: // right arrow
-				yPos += 1;
-				updateMap();
+				move('right');
 				break;
 			case 40: // down arrow
-				xPos += 1;
-				updateMap();
+				move('down');
 				break;
 			default:
 				console.log(e.keyCode);
 		}
 	}
-	console.log(`xPos: ${xPos}, yPos: ${yPos}`);
 });
-
 document.addEventListener('keyup', (e) => {
 	delete keysDown[e.keyCode];
 });
 
-function updateMap() {
-	axios.post('/api/map', {x: xPos, y: yPos})
+function move(dir) {
+	axios.post('/api/move', { direction: dir })
 		.then((res) => {
-			handleMap(res.data)
+			testPlayer = res.data;
+			updateMap();
 		})
-		.catch((err) => {
-			console.log(err)
-		});
+		.catch((err) => console.log(err));
+}
+
+function updateMap() {
+	axios.post('/api/map', { x: testPlayer.x, y: testPlayer.y })
+		.then((res) => {
+			handleMap(res.data);
+		})
+		.catch((err) => console.log(err));
 }
 
 // construct the div to display the map
