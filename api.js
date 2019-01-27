@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
+const axios = require('axios');
 
 const Player = require('./models/player');
+
+const TILE_INFO = require('./maps/tile-info.json');
 
 // loading map
 let mapArray = [];
@@ -15,57 +18,45 @@ fs.readFile(__dirname + '/maps/testmap1', 'utf8', (err, data) => {
 	console.log('map loaded');
 });
 
-// get the test player
-router.get('/player', (req, res) => {
-	Player.findOne({ name: 'testPlayer' }, (err, player) => {
-		if (player) {
-			console.log(`found ${player.name}`);
-			res.send(player);
-		} else console.log('could not find test player');
-	});
-});
-
 // move the test player
 router.post('/move', (req, res) => {
 	const { direction } = req.body;
 	const query = { name: 'testPlayer' };
-	switch (direction) {
-		case 'up':
+
+	Player.findOne(query, (err, player) => {
+		let proposedX = player.x; let proposedY = player.y;
+		switch (direction) {
+			case 'up':
+				proposedX -= 1;
+				break;
+			case 'down':
+				proposedX += 1;
+				break;
+			case 'left':
+				proposedY -= 1;
+				break;
+			case 'right':
+				proposedY += 1;
+				break;
+			default:
+				console.log('invalid move direction');
+		}
+
+		// determine if tile is passable, and if it's not, stop movement
+		tileInfo = TILE_INFO[mapArray[proposedX][proposedY]];
+		if (tileInfo.passable) {
 			Player.findOneAndUpdate(
 				query,
-				{ $inc: { x: -1 } },
+				{ x: proposedX, y: proposedY },
 				{ new: true },
-				(err, player) => { res.send(player); }
+				(err2, player2) => { res.send(player2); }
 			);
-			break;
-		case 'down':
-			Player.findOneAndUpdate(
-				query,
-				{ $inc: { x: 1 } },
-				{ new: true },
-				(err, player) => { res.send(player); }
-			);
-			break;
-		case 'left':
-			Player.findOneAndUpdate(
-				query,
-				{ $inc: { y: -1 } },
-				{ new: true },
-				(err, player) => { res.send(player); }
-			);
-			break;
-		case 'right':
-			Player.findOneAndUpdate(
-				query,
-				{ $inc: { y: 1 } },
-				{ new: true },
-				(err, player) => { res.send(player); }
-			);
-			break;
-		default:
-			console.log('invalid move direction');
-	}
-})
+		} else {
+			// don't move!
+			res.send(player);
+		}
+	});
+});
 
 // request the 13x13 2D array section of the map based on current position 
 router.get('/map', (req, res) => {

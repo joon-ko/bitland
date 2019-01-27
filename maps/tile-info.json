@@ -1,0 +1,29 @@
+{
+	"w": {
+		"tile-id": 1,
+		"description": "default wall",
+		"passable": false,
+		"display": {
+			"background-color": "#000000",
+			"text": "w"
+		}
+	},
+	" ": {
+		"tile-id": 2,
+		"description": "default empty space",
+		"passable": true,
+		"display": {
+			"background-color": "#000000",
+			"text": " "
+		}
+	},
+	".": {
+		"tile-id": 3,
+		"description": "empty space, alternative to id:2",
+		"passable": true,
+		"display": {
+			"background-color": "#000000",
+			"text": "."
+		}
+	}
+}
