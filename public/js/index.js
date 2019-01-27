@@ -1,12 +1,7 @@
 let keysDown = {};
-let testPlayer = undefined;
 
-axios.get('/api/player')
-	.then((res) => {
-		testPlayer = res.data;
-		updateMap();
-	})
-	.catch((err) => console.log(err));
+// initial display of map
+requestMap();
 
 // handle movement with arrow keys
 document.addEventListener('keydown', (e) => {
@@ -38,21 +33,20 @@ function move(dir) {
 	axios.post('/api/move', { direction: dir })
 		.then((res) => {
 			testPlayer = res.data;
-			updateMap();
+			requestMap();
 		})
 		.catch((err) => console.log(err));
 }
 
-function updateMap() {
-	axios.post('/api/map', { x: testPlayer.x, y: testPlayer.y })
+function requestMap() {
+	axios.get('/api/map')
 		.then((res) => {
-			handleMap(res.data);
+			displayMap(res.data);
 		})
 		.catch((err) => console.log(err));
 }
 
-// construct the div to display the map
-function handleMap(map) {
+function displayMap(map) {
 	const mapContainer = document.getElementById('map-container');
 	while (mapContainer.firstChild) {
 		mapContainer.removeChild(mapContainer.firstChild);

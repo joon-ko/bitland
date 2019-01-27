@@ -68,27 +68,29 @@ router.post('/move', (req, res) => {
 })
 
 // request the 13x13 2D array section of the map based on current position 
-router.post('/map', (req, res) => {
-	const { x, y } = req.body;
+router.get('/map', (req, res) => {
+	Player.findOne({ name: 'testPlayer' }, (err, player) => {
+		const { name, x, y } = player;
 
-	// build the array
-	let resArray = [];
-	for (let i = x-6; i <= x+6; i++) {
-		let line = [];
-		for (let j = y-6; j <= y+6; j++) {
-			// if out of bounds, fill with blank
-			if (i < 0 || j < 0 || i >= mapArray.length || j >= mapArray[0].length) {
-				line.push(' ');
-			} else if (i === x && j === y) {
-				line.push('p');
-			} else {
-				line.push(mapArray[i][j]);
+		// build the array
+		let resArray = [];
+		for (let i = x-6; i <= x+6; i++) {
+			let line = [];
+			for (let j = y-6; j <= y+6; j++) {
+				// if out of bounds, fill with blank
+				if (i < 0 || j < 0 || i >= mapArray.length || j >= mapArray[0].length) {
+					line.push(' ');
+				} else if (i === x && j === y) {
+					line.push('p');
+				} else {
+					line.push(mapArray[i][j]);
+				}
 			}
+			resArray.push(line);
 		}
-		resArray.push(line);
-	}
 
-	res.send(resArray);
+		res.send(resArray);
+	});
 });
 
 module.exports = router;
