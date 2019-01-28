@@ -25,5 +25,14 @@
 			"background-color": "#000000",
 			"text": "."
 		}
+	},
+	"p": {
+		"tile-id": 4,
+		"description": "test player",
+		"passable": true,
+		"display": {
+			"background-color": "#000000",
+			"text": "p"
+		}
 	}
 }

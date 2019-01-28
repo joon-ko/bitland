@@ -13,19 +13,15 @@ app.get('/', (req, res) => {
 	res.sendFile('index.html', {root: __dirname});
 });
 
-var testPlayer;
-
 // load or create test player
 const Player = require('./models/player');
 Player.findOne({ name: 'testPlayer' }, (err, player) => {
 	if (player) {
-		testPlayer = player;
 		console.log(`${player.name} loaded`);
 	}
 	else {
 		Player.create({ name: 'testPlayer', x: 7, y: 7 })
 			.then((player) => {
-				testPlayer = player;
 				console.log(`${player.name} created`);
 			});
 	}

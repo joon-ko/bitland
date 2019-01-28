@@ -61,7 +61,7 @@ router.post('/move', (req, res) => {
 // request the 13x13 2D array section of the map based on current position 
 router.get('/map', (req, res) => {
 	Player.findOne({ name: 'testPlayer' }, (err, player) => {
-		const { name, x, y } = player;
+		const x = player.x; const y = player.y;
 
 		// build the array
 		let resArray = [];
@@ -70,11 +70,11 @@ router.get('/map', (req, res) => {
 			for (let j = y-6; j <= y+6; j++) {
 				// if out of bounds, fill with blank
 				if (i < 0 || j < 0 || i >= mapArray.length || j >= mapArray[0].length) {
-					line.push(' ');
+					line.push(TILE_INFO[" "]);
 				} else if (i === x && j === y) {
-					line.push('p');
+					line.push(TILE_INFO["p"]);
 				} else {
-					line.push(mapArray[i][j]);
+					line.push(TILE_INFO[mapArray[i][j]]);
 				}
 			}
 			resArray.push(line);
