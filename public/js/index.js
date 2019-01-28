@@ -49,24 +49,27 @@ function requestMap() {
 
 // displays the 13x13 map in the circular view style.
 function displayMap(map) {
-	const mapContainer = document.getElementById('map-container');
-	while (mapContainer.firstChild) {
-		mapContainer.removeChild(mapContainer.firstChild);
-	}
+	const container = document.getElementById('container');
+	const oldMapDiv = document.getElementById('map');
+	if (oldMapDiv) container.removeChild(oldMapDiv);
 	const mapDiv = document.createElement('div');
-	mapDiv.className = 'map';
+	mapDiv.id = 'map';
 	for (let i = 0; i < map.length; i++) {
 		for (let j = 0; j < map[0].length; j++) {
 			const tile = document.createElement('div');
 			let tileClass = 'tile';
-			if (notInRange(i, j)) tileClass += ' invisible';
+			if (notInRange(i, j)) {
+				tileClass += ' invisible';
+				tile.innerHTML = ' ';
+			} else {
+				tile.innerHTML = map[i][j];
+			}
 			tileClass += calculateBorderClass(i, j);
 			tile.className = tileClass;
-			tile.innerHTML = map[i][j];
 			mapDiv.appendChild(tile);
 		}
 	}
-	mapContainer.appendChild(mapDiv);
+	container.insertBefore(mapDiv, document.getElementById('menu'));
 
 	// returns false if coordinates outside the circular display range
 	function notInRange(i, j) {

@@ -1,11 +1,14 @@
-#map-container {
+#container {
+	background-color: #c1e1ec;
 	height: 100vh;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
 }
 
-.map {
+#map {
+	background-color: white;
 	display: grid;
 	grid-template-rows: repeat(13, 25px);
 	grid-template-columns: repeat(13, 25px);
@@ -17,8 +20,6 @@
 	box-sizing: border-box;
 	text-align: center;
 	vertical-align: middle;
-	font-family: 'Source Code Pro', monospace;
-	font-weight: lighter;
 	border: 1px solid #dbdbdb;
 
 	/* disable text highlighting */
@@ -31,7 +32,8 @@
 }
 
 .invisible {
-	visibility: hidden;
+	border: none;
+	background-color: #c1e1ec;
 }
 
 .border-l {
@@ -54,8 +56,44 @@
 	border-bottom: 2px solid #bdbdbd;
 }
 
+#menu {
+	background-color: white;
+    width: 350px;
+    height: 150px;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 50px auto;
+    display: grid;
+    grid-template-rows: 25px auto;
+    grid-template-columns: 25px 25px 25px auto;
+
+    /* disable text highlighting */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+
+.menu-item {
+	text-align: center;
+	vertical-align: middle;
+	box-sizing: border-box;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+}
+
+#menu-display {
+	margin: 5px 5px;
+	grid-column: 1 / 5;
+	grid-row: 2 / 3;
+}
+
 html, body {
 	margin: 0;
 	height: 100%;
 	overflow: hidden;
+	font-family: 'Source Code Pro', monospace;
+	font-weight: lighter;
 }
