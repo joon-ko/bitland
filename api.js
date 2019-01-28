@@ -9,7 +9,7 @@ const TILE_INFO = require('./maps/tile-info.json');
 
 // loading map
 let mapArray = [];
-fs.readFile(__dirname + '/maps/testmap1', 'utf8', (err, data) => {
+fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
 	if (err) console.log(err);
 	let lines = data.split('\n');
 	lines.forEach((line) => {

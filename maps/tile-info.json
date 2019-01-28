@@ -34,5 +34,14 @@
 			"background-color": "#000000",
 			"text": "p"
 		}
+	},
+	"I": {
+		"tile-id": 5,
+		"description": "naming scroll",
+		"passable": true,
+		"display": {
+			"background-color": "red",
+			"text": "I"
+		}
 	}
 }
