@@ -1,0 +1,32 @@
+#container {
+	background-color: #c1e1ec;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+#login {
+	margin: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	color: black;
+}
+
+#login:hover {
+	color: green;
+}
+
+input {
+	margin: 5px 0px;
+	font-family: 'Source Code Pro', monospace;
+}
+
+html, body {
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+	font-family: 'Source Code Pro', monospace;
+	font-weight: lighter;
+}

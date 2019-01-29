@@ -1,47 +1,79 @@
 {
 	"w": {
-		"tile-id": 1,
 		"description": "default wall",
 		"passable": false,
 		"display": {
-			"background-color": "#000000",
+			"backgroundColor": "#202020",
+			"color": "white",
 			"text": "w"
 		}
 	},
 	" ": {
-		"tile-id": 2,
 		"description": "default empty space",
 		"passable": true,
 		"display": {
-			"background-color": "#000000",
+			"backgroundColor": "white",
+			"color": "black",
 			"text": " "
 		}
 	},
 	".": {
-		"tile-id": 3,
-		"description": "empty space, alternative to id:2",
+		"description": "empty space",
 		"passable": true,
 		"display": {
-			"background-color": "#000000",
+			"backgroundColor": "white",
+			"color": "black",
 			"text": "."
 		}
 	},
 	"p": {
-		"tile-id": 4,
 		"description": "test player",
 		"passable": true,
 		"display": {
-			"background-color": "#000000",
+			"backgroundColor": "white",
+			"color": "black",
 			"text": "p"
 		}
 	},
-	"I": {
-		"tile-id": 5,
-		"description": "naming scroll",
+
+	"s": {
+		"description": "basic sword",
 		"passable": true,
 		"display": {
-			"background-color": "red",
-			"text": "I"
+			"backgroundColor": "#D63232",
+			"color": "white",
+			"text": "s"
+		}
+	},
+
+	"À": {
+		"description": "unique message",
+		"message": "use the <strong>arrow</strong> keys to move.",
+		"passable": true,
+		"display": {
+			"backgroundColor": "#d3d3d3",
+			"color": "black",
+			"text": "M"
+		}
+	},
+	"Á": {
+		"description": "unique message",
+		"message": "the center circle is your <strong>map</strong>. <span style='color: blue;'><strong>bitland</strong></span> is made up of <strong>tiles</strong>. some tiles are passable (like this message tile), and some (like the wall tiles) are not.",
+		"passable": true,
+		"display": {
+			"backgroundColor": "#d3d3d3",
+			"color": "black",
+			"text": "M"
+		}
+	},
+	"Â": {
+		"description": "unique message",
+		"message": "this box is your <strong>menu</strong>. access your inventory by pressing the <strong>i</strong> key, and this log window by pressing the <strong>l</strong> key.",
+		"passable": true,
+		"display": {
+			"backgroundColor": "#d3d3d3",
+			"color": "black",
+			"text": "M"
 		}
 	}
 }

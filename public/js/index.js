@@ -2,7 +2,7 @@
 let keysDown = {};
 
 // initial display of map
-requestMap();
+update();
 
 // handle movement with arrow keys
 document.addEventListener('keydown', (e) => {
@@ -21,8 +21,6 @@ document.addEventListener('keydown', (e) => {
 			case 40: // down arrow
 				move('down');
 				break;
-			default:
-				console.log(e.keyCode);
 		}
 	}
 });
@@ -33,18 +31,17 @@ document.addEventListener('keyup', (e) => {
 function move(dir) {
 	axios.post('/api/move', { direction: dir })
 		.then((res) => {
-			testPlayer = res.data;
-			requestMap();
-		})
-		.catch((err) => console.log(err));
+			update();
+		});
 }
 
-function requestMap() {
+// general-purpose update of the screen, usually after movement
+function update() {
 	axios.get('/api/map')
 		.then((res) => {
 			displayMap(res.data);
-		})
-		.catch((err) => console.log(err));
+			displayLog();
+		});
 }
 
 // displays the 13x13 map in the circular view style.
@@ -77,6 +74,8 @@ function displayMap(map) {
 		} else {
 			const tileInfo = map[i][j];
 			tile.innerHTML = tileInfo.display.text;
+			tile.style.backgroundColor = tileInfo.display.backgroundColor;
+			tile.style.color = tileInfo.display.color;
 		}
 		tileClass += calculateBorderClass(i, j);
 		tile.className = tileClass;
@@ -116,3 +115,13 @@ function displayMap(map) {
 	}
 }
 
+// so far, displays any pertinent messages to the log
+function displayLog() {
+	axios.get('/api/tile')
+		.then((res) => {
+			const menuDisplay = document.getElementById('menu-display');
+			const tileInfo = res.data;
+			if (tileInfo.message) menuDisplay.innerHTML = tileInfo.message;
+			else menuDisplay.innerHTML = 'tutorial';
+		});
+}

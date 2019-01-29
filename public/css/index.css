@@ -1,3 +1,18 @@
+#logout {
+	text-decoration: none;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	margin: 10px;
+	cursor: pointer;
+	font-weight: bold;
+	color: black;
+}
+
+#logout:hover {
+	color: green;
+}
+
 #container {
 	background-color: #c1e1ec;
 	height: 100vh;
@@ -61,7 +76,6 @@
     width: 350px;
     height: 150px;
     border: 1px solid black;
-    border-radius: 10px;
     margin: 50px auto;
     display: grid;
     grid-template-rows: 25px auto;
@@ -84,8 +98,12 @@
 	border-right: 1px solid black;
 }
 
+.selected {
+	background-color: #d3d3d3;
+}
+
 #menu-display {
-	margin: 5px 5px;
+	margin: 7px 7px;
 	grid-column: 1 / 5;
 	grid-row: 2 / 3;
 }
