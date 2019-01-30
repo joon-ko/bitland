@@ -3,8 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const axios = require('axios');
 
-const model = require('./models/model');
-const User = model.User;
+const User = require('./models/user');
 
 const TILE_INFO = require('./maps/tile-info.json');
 
@@ -21,8 +20,8 @@ fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
 
 // get current tiles test player is standing on
 router.get('/tile', (req, res) => {
-	User.findOne({ username: 'test' }, (err, user) => {
-		const x = user.player.x; const y = user.player.y;
+	User.findOne({ username: req.user.username }, (err, user) => {
+		const x = user.x; const y = user.y;
 		res.send(TILE_INFO[mapArray[x][y]]);
 	})
 });
@@ -30,10 +29,10 @@ router.get('/tile', (req, res) => {
 // move the test player
 router.post('/move', (req, res) => {
 	const { direction } = req.body;
-	const query = { username: 'test' };
+	const query = { username: req.user.username };
 
 	User.findOne(query, (err, user) => {
-		let proposedX = user.player.x; let proposedY = user.player.y;
+		let proposedX = user.x; let proposedY = user.y;
 		switch (direction) {
 			case 'up':
 				proposedX -= 1;
@@ -56,7 +55,7 @@ router.post('/move', (req, res) => {
 		if (tileInfo.passable) {
 			User.findOneAndUpdate(
 				query,
-				{ $set: { 'player.x': proposedX, 'player.y': proposedY } },
+				{ $set: { 'x': proposedX, 'y': proposedY } },
 				{ new: true },
 				(err, user) => { res.send(user); }
 			);
@@ -69,8 +68,10 @@ router.post('/move', (req, res) => {
 
 // request the 13x13 2D array section of the map based on current position 
 router.get('/map', (req, res) => {
-	User.findOne({ username: 'test' }, (err, user) => {
-		const x = user.player.x; const y = user.player.y;
+	User.findOne({ username: req.user.username }, (err, user) => {
+		if (err) console.log(err);
+
+		const x = user.x; const y = user.y;
 
 		// build the array
 		let resArray = [];

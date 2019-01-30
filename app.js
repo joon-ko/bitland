@@ -17,7 +17,6 @@ nunjucks.configure('views', {
 });
 
 app.use('/static', express.static('public'));
-app.use('/api', api);
 
 app.use(session({
   secret: 'session-secret',
@@ -27,6 +26,8 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use('/api', api);
 
 app.get('/', (req, res) => {
 	if (req.isAuthenticated()) res.render('index.html');
@@ -51,19 +52,16 @@ app.get('/logout', (req, res) => {
 	res.redirect('/login');
 });
 
-const model = require('./models/model');
-model.User.findOne({ username: 'test' }, (err, user) => {
+const User = require('./models/user');
+User.findOne({ username: 'test' }, (err, user) => {
 	if (user) {
 		console.log('test user loaded');
 	} else {
-		const testUser = new model.User({
+		const testUser = new User({
 			username: 'test',
 			password: 'test123',
-			player: new model.Player({
-				name: 'hero',
-				x: 1,
-				y: 1
-			})
+			x: 1,
+			y: 1
 		});
 		testUser.save().then(() => console.log('test user created'));
 	}

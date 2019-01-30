@@ -68,7 +68,7 @@
 	},
 	"Â": {
 		"description": "unique message",
-		"message": "this box is your <strong>menu</strong>. access your inventory by pressing the <strong>i</strong> key, and this log window by pressing the <strong>l</strong> key.",
+		"message": "this box is your <strong>menu</strong>. you can access this log window at any time by pressing the <strong>l</strong> key.",
 		"passable": true,
 		"display": {
 			"backgroundColor": "#d3d3d3",
