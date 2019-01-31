@@ -11,3 +11,12 @@ function login() {
 			console.log(err);
 		})
 }
+
+// pressing enter is the same as login attempt
+document.addEventListener('keydown', (e) => {
+	switch (e.keyCode) {
+		case 13: // enter
+			login();
+			break;
+	}
+});

@@ -1,7 +1,7 @@
 // keys that are currently held down (prevent multiple events for holding down a key)
 let keysDown = {};
 
-// initial display of map
+// initial display
 update();
 
 // handle all key commands
@@ -35,6 +35,7 @@ document.addEventListener('keydown', (e) => {
                 const logTab = document.getElementById('log');
                 selectMenuTab(logTab);
                 break;
+
         }
     }
 });
@@ -60,10 +61,75 @@ function update() {
         });
 }
 
+// get the current tab that is selected in the menu, deselect it,
+// then select a new tab
+function selectMenuTab(tab) {
+    const selected = document.getElementsByClassName('selected')[0];
+    selected.classList.remove('selected');
+    tab.classList.add('selected');
+}
+
+// get the current tab that is selected in the menu
+function getSelectedMenuTab() {
+    return document.getElementsByClassName('selected')[0];
+}
+
+// displays the user's inventory to the menu display
+function displayInventory() {
+    axios.get('/api/inventory')
+        .then((res) => {
+            const menuDisplay = document.getElementById('menu-display');
+            clearNode(menuDisplay);
+            const inventoryArray = res.data;
+            // construct the inventory slot divs
+            for (let i=0; i<10; i++) {
+                const invSlot = document.createElement('div');
+                const itemInfo = inventoryArray[i];
+                invSlot.className = 'inventory-slot';
+                invSlot.innerHTML = itemInfo.text;
+                applyStyle(invSlot, itemInfo.style);
+                menuDisplay.appendChild(invSlot);
+            }
+        });
+}
+
+// displays the current log message to the menu display
+function displayLog() {
+    axios.get('/api/tile')
+        .then((res) => {
+            const menuDisplay = document.getElementById('menu-display');
+            clearNode(menuDisplay);
+            const tileInfo = res.data;
+            // construct log display div
+            const logDiv = document.createElement('div');
+            logDiv.id = 'log-div';
+            if (tileInfo.message) logDiv.innerHTML = tileInfo.message;
+            else logDiv.innerHTML = 'tutorial';
+            menuDisplay.appendChild(logDiv);
+        });
+}
+
+// takes a DOM node and applies currently supported styles to it.
+// for example, if the template was { color: 'blue' },
+// this function would apply node.style.color = 'blue'.
+function applyStyle(node, template) {
+    if (template.hasOwnProperty('color'))
+        node.style.color = template.color;
+    if (template.hasOwnProperty('backgroundColor'))
+        node.style.backgroundColor = template.backgroundColor;
+    if (template.hasOwnProperty('fontWeight'))
+        node.style.fontWeight = template.fontWeight;
+}
+
+// clear all children and inner text from a DOM node
+function clearNode(node) {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild);
+    }
+}
+
 // displays the 13x13 map in the circular view style.
 function displayMap(map) {
-
-    /* the gist */
 
     const container = document.getElementById('container');
     const oldMapDiv = document.getElementById('map');
@@ -77,8 +143,6 @@ function displayMap(map) {
         }
     }
     container.insertBefore(mapDiv, document.getElementById('menu'));
-
-    /* the dirty work */
 
     // create the tile div
     function constructTile(map, i, j) {
@@ -128,71 +192,4 @@ function displayMap(map) {
             return borderClasses;
         }
     }
-}
-
-// displays the current log message to the menu display
-function displayLog() {
-    axios.get('/api/tile')
-        .then((res) => {
-            const menuDisplay = document.getElementById('menu-display');
-            clearNode(menuDisplay);
-            const tileInfo = res.data;
-            // construct log display div
-            const logDiv = document.createElement('div');
-            logDiv.id = 'log-div';
-            if (tileInfo.message) logDiv.innerHTML = tileInfo.message;
-            else logDiv.innerHTML = 'tutorial';
-            menuDisplay.appendChild(logDiv);
-        });
-}
-
-// displays the user's inventory to the menu display
-function displayInventory() {
-    axios.get('/api/inventory')
-        .then((res) => {
-            const menuDisplay = document.getElementById('menu-display');
-            clearNode(menuDisplay);
-            const inventoryArray = res.data;
-            // construct the inventory slot divs
-            for (let i=0; i<10; i++) {
-                const invSlot = document.createElement('div');
-                const itemInfo = inventoryArray[i];
-                invSlot.className = 'inventory-slot';
-                invSlot.innerHTML = itemInfo.text;
-                applyStyle(invSlot, itemInfo.style);
-                menuDisplay.appendChild(invSlot);
-            }
-        });
-}
-
-// takes a DOM node and applies currently supported styles to it.
-// for example, if the template was { color: 'blue' },
-// this function would apply node.style.color = 'blue'.
-function applyStyle(node, template) {
-    if (template.hasOwnProperty('color'))
-        node.style.color = template.color;
-    if (template.hasOwnProperty('backgroundColor'))
-        node.style.backgroundColor = template.backgroundColor;
-    if (template.hasOwnProperty('fontWeight'))
-        node.style.fontWeight = template.fontWeight;
-}
-
-// clear all children and inner text from a DOM node
-function clearNode(node) {
-    while (node.firstChild) {
-        node.removeChild(node.firstChild);
-    }
-}
-
-// get the current tab that is selected in the menu, deselect it,
-// then select a new tab
-function selectMenuTab(tab) {
-    const selected = document.getElementsByClassName('selected')[0];
-    selected.classList.remove('selected');
-    tab.classList.add('selected');
-}
-
-// get the current tab that is selected in the menu
-function getSelectedMenuTab() {
-    return document.getElementsByClassName('selected')[0];
 }
