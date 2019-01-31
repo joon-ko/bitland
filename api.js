@@ -4,100 +4,142 @@ const fs = require('fs');
 const axios = require('axios');
 
 const User = require('./models/user');
+const world = require('./models/world');
 
 const TILE_INFO = require('./maps/tile-info.json');
 
-// loading map
-let mapArray = [];
-fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
-	if (err) console.log(err);
-	let lines = data.split(/[\r\n]+/g);
-	lines.forEach((line) => {
-		mapArray.push(line.split(''));
-	});
-	console.log('map loaded.');
-});
+// querying the entire world map every time we want to do anything is very slow...
+// new strategy: the server stores a snapshot of the world every second in a local variable
+// that can be accessed very quickly. only world updates (not world gets) talk to db.
+var tutorialWorld;
+setInterval(() => {
+    getWorld('tutorial', (world) => {
+        tutorialWorld = world;
+    });
+}, 1000);
 
-// get current tiles test player is standing on
+// loading map
+// let mapArray = [];
+// fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
+//  if (err) console.log(err);
+//  let lines = data.split(/[\r\n]+/g);
+//  lines.forEach((line) => {
+//      mapArray.push(line.split(''));
+//  });
+//  console.log('map loaded.');
+
+//  const world = require('./models/world')
+
+//  let worldArray = [];
+//  for (let i=0; i<mapArray.length; i++) {
+//      let row = [];
+//      for (let j=0; j<mapArray[0].length; j++) {
+//          row.push(new world.WorldCoordinate({
+//              entities: new world.Tile({
+//                  name: mapArray[i][j],
+//                  tileInfo: TILE_INFO[mapArray[i][j]]
+//              })
+//          }));
+//      }
+//      worldArray.push(row);
+//  }
+//  const tutorialWorld = new world.World({
+//      name: 'tutorial',
+//      rows: mapArray.length,
+//      cols: mapArray[0].length,
+//      world: worldArray
+//  });
+//  tutorialWorld.save().then(() => console.log('tutorial world saved'));
+
+// });
+
+// shorthand for querying the db for a world document and returning its world array
+function getWorld(worldName, callback) {
+    world.World.findOne({ name: worldName }, (err, worldDocument) => {
+        if (err) console.log(err);
+        if (worldDocument) return callback(worldDocument.world);
+    });
+}
+
+// get current tile test player is standing on
 router.get('/tile', (req, res) => {
-	User.findOne({ username: req.user.username }, (err, user) => {
-		const x = user.x; const y = user.y;
-		res.send(TILE_INFO[mapArray[x][y]]);
-	})
+    User.findOne({ username: req.user.username }, (err, user) => {
+        const x = user.x; const y = user.y;
+        res.send(tutorialWorld[x][y].entities[0].tileInfo);
+    })
 });
 
 // move the test player
 router.post('/move', (req, res) => {
-	const { direction } = req.body;
-	const query = { username: req.user.username };
-	User.findOne(query, (err, user) => {
-		let proposedX = user.x; let proposedY = user.y;
-		switch (direction) {
-			case 'up':
-				proposedX -= 1;
-				break;
-			case 'down':
-				proposedX += 1;
-				break;
-			case 'left':
-				proposedY -= 1;
-				break;
-			case 'right':
-				proposedY += 1;
-				break;
-			default:
-				console.log('invalid move direction');
-		}
-
-		// determine if tile is passable, and if it's not, stop movement
-		tileInfo = TILE_INFO[mapArray[proposedX][proposedY]];
-		if (tileInfo.passable) {
-			User.findOneAndUpdate(
-				query,
-				{ $set: { 'x': proposedX, 'y': proposedY } },
-				{ new: true },
-				(err, user) => { res.send(user); }
-			);
-		} else {
-			// don't move!
-			res.send(user);
-		}
-	});
+    const { direction } = req.body;
+    const query = { username: req.user.username };
+    User.findOne(query, (err, user) => {
+        let proposedX = user.x; let proposedY = user.y;
+        switch (direction) {
+            case 'up':
+                proposedX -= 1;
+                break;
+            case 'down':
+                proposedX += 1;
+                break;
+            case 'left':
+                proposedY -= 1;
+                break;
+            case 'right':
+                proposedY += 1;
+                break;
+            default:
+                console.log('invalid move direction');
+        }
+        // determine if tile is passable, and if it's not, stop movement
+        tileInfo = tutorialWorld[proposedX][proposedY].entities[0].tileInfo;
+        if (tileInfo.passable) {
+            User.findOneAndUpdate(
+                query,
+                { $set: { 'x': proposedX, 'y': proposedY } },
+                { new: true },
+                (err, user) => { res.send(user); }
+            );
+        } else {
+            // don't move!
+            res.send(user);
+        }
+    });
 });
 
 // request the 13x13 2D array section of the map based on current position 
 router.get('/map', (req, res) => {
-	User.findOne({ username: req.user.username }, (err, user) => {
-		if (err) console.log(err);
-		const x = user.x; const y = user.y;
-		// build the array
-		let resArray = [];
-		for (let i = x-6; i <= x+6; i++) {
-			let line = [];
-			for (let j = y-6; j <= y+6; j++) {
-				// if out of bounds, fill with blank
-				if (i < 0 || j < 0 || i >= mapArray.length || j >= mapArray[0].length) {
-					line.push(TILE_INFO[' ']);
-				} else if (i === x && j === y) {
-					line.push(TILE_INFO['p']);
-				} else {
-					line.push(TILE_INFO[mapArray[i][j]]);
-				}
-			}
-			resArray.push(line);
-		}
-		res.send(resArray);
-	});
+    User.findOne({ username: req.user.username }, (err, user) => {
+        if (err) console.log(err);
+        const x = user.x; const y = user.y;
+        // build the array
+        let resArray = [];
+        for (let i = x-6; i <= x+6; i++) {
+            let line = [];
+            for (let j = y-6; j <= y+6; j++) {
+                // if out of bounds, fill with blank
+                if (i < 0 || j < 0 || i >= tutorialWorld.length || j >= tutorialWorld[0].length) {
+                    line.push(TILE_INFO[' ']);
+                } else if (i === x && j === y) {
+                    line.push(TILE_INFO['p']);
+                } else {
+                    line.push(tutorialWorld[i][j].entities[0].tileInfo);
+                }
+            }
+            resArray.push(line);
+        }
+        res.send(resArray);
+    });
 });
 
 // get current inventory as a 10-element array
 router.get('/inventory', (req, res) => {
-	User.findOne({ username: req.user.username }, (err, user) => {
-		if (err) console.log(err);
-		let inventoryArray = user.inventory.map((itemSlot) => TILE_INFO[itemSlot.item.name]);
-		if (inventoryArray.length != 10) console.log('warning: inventory does not have 10 slots!');
-		res.send(inventoryArray);
-	});
+    User.findOne({ username: req.user.username }, (err, user) => {
+        if (err) console.log(err);
+        let inventoryArray = user.inventory.map((itemSlot) => TILE_INFO[itemSlot.item.name]);
+        if (inventoryArray.length != 10) console.log('warning: inventory does not have 10 slots!');
+        res.send(inventoryArray);
+    });
 });
 
 module.exports = router;

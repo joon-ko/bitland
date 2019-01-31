@@ -55,7 +55,7 @@ function update() {
     axios.get('/api/map')
         .then((res) => {
             displayMap(res.data);
-            const selected = getSelectedMenuTab();
+            const selected = document.getElementsByClassName('selected')[0];
             if (selected.id === 'inventory') displayInventory();
             else if (selected.id === 'log') displayLog();
         });
@@ -67,11 +67,6 @@ function selectMenuTab(tab) {
     const selected = document.getElementsByClassName('selected')[0];
     selected.classList.remove('selected');
     tab.classList.add('selected');
-}
-
-// get the current tab that is selected in the menu
-function getSelectedMenuTab() {
-    return document.getElementsByClassName('selected')[0];
 }
 
 // displays the user's inventory to the menu display
@@ -86,7 +81,8 @@ function displayInventory() {
                 const invSlot = document.createElement('div');
                 const itemInfo = inventoryArray[i];
                 invSlot.className = 'inventory-slot';
-                invSlot.innerHTML = itemInfo.text;
+                // the '.' tile represents an empty item, so display with a blank
+                invSlot.innerHTML = (itemInfo.text === '.' ? ' ' : itemInfo.text);
                 applyStyle(invSlot, itemInfo.style);
                 menuDisplay.appendChild(invSlot);
             }
@@ -103,8 +99,7 @@ function displayLog() {
             // construct log display div
             const logDiv = document.createElement('div');
             logDiv.id = 'log-div';
-            if (tileInfo.message) logDiv.innerHTML = tileInfo.message;
-            else logDiv.innerHTML = 'tutorial';
+            logDiv.innerHTML = (tileInfo.message ? tileInfo.message : 'tutorial');
             menuDisplay.appendChild(logDiv);
         });
 }

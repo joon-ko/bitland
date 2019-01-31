@@ -12,7 +12,7 @@ const Item = mongoose.model('Item', ItemSchema);
 
 const InventorySpaceSchema = new Schema({
     filled : { type: Boolean, default: false },
-    item   : { type: ItemSchema, default: new Item() },
+    item   : { type: ItemSchema },
     count  : { type: Number, default: 0 }
 });
 
@@ -20,7 +20,7 @@ InventorySpace = mongoose.model('InventorySpace', InventorySpaceSchema);
 
 let defaultInventory = [];
 for (let i=0; i<10; i++) {
-    defaultInventory.push(new InventorySpace());
+    defaultInventory.push(new InventorySpace({ item: new Item() }));
 }
 
 const UserSchema = new Schema({
