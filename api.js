@@ -10,9 +10,13 @@ const Tile = worldModels.Tile;
 
 const TILE_INFO = require('./maps/tile-info.json');
 
+// true: reset the world state permanently. false: world loads as normal.
+const RESET_WORLD_STATE = true;
+
 // querying the entire world map every time we want to do anything is very slow...
 // new strategy: the server stores a snapshot of the world every second in a local variable
 // that can be accessed very quickly. only world updates (not world gets) talk to db.
+// examples of world updates: item pickup/dropping, ......
 var tutorialWorld;
 setInterval(() => {
     getWorld('tutorial', (world) => {
@@ -20,7 +24,7 @@ setInterval(() => {
     });
 }, 1000);
 
-// turn the ASCII art of the tutorial map into an actual world state
+// turn the ASCII art of the tutorial map into an actual world state.
 let mapArray = [];
 fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
     if (err) console.log(err);
@@ -41,13 +45,19 @@ fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
         worldArray.push(row);
     }
     World.findOne({ name: 'tutorial' }, (err, worldDocument) => {
-        const worldState = { name: 'tutorial', world: worldArray };
-        if (worldDocument) {
-            World.update(worldState);
-            console.log('world state updated.');
-        } else {
-            World.create(worldState);
+        if (worldDocument && RESET_WORLD_STATE) {
+            World.deleteOne({ name: 'tutorial' }, (err) => {
+                console.log('world state deleted.');
+                World.create({ name: 'tutorial', world: worldArray });
+                console.log('world state recreated.');
+            });
+        }
+        else if (!worldDocument) {
+            World.create({ name: 'tutorial', world: worldArray });
             console.log('world state created.');
+        }
+        else {
+            console.log('world state loaded.');
         }
     });
 });
@@ -56,19 +66,19 @@ fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
 function getWorld(worldName, callback) {
     World.findOne({ name: worldName }, (err, worldDocument) => {
         if (err) console.log(err);
-        if (worldDocument) return callback(worldDocument.world);
+        if (worldDocument) callback(worldDocument.world);
     });
 }
 
-// get current tile test player is standing on
+// get current tile player is standing on
 router.get('/tile', (req, res) => {
     User.findOne({ username: req.user.username }, (err, user) => {
         const x = user.x; const y = user.y;
         res.send(tutorialWorld[x][y].tileInfo);
-    })
+    });
 });
 
-// move the test player
+// move the player
 router.post('/move', (req, res) => {
     const { direction } = req.body;
     const query = { username: req.user.username };
@@ -97,11 +107,10 @@ router.post('/move', (req, res) => {
                 query,
                 { $set: { 'x': proposedX, 'y': proposedY } },
                 { new: true },
-                (err, user) => { res.send(user); }
+                (err, user) => res.end()
             );
         } else {
-            // don't move!
-            res.send(user);
+            res.end();
         }
     });
 });

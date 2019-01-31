@@ -35,7 +35,6 @@ document.addEventListener('keydown', (e) => {
                 const logTab = document.getElementById('log');
                 selectMenuTab(logTab);
                 break;
-
         }
     }
 });
@@ -104,25 +103,6 @@ function displayLog() {
         });
 }
 
-// takes a DOM node and applies currently supported styles to it.
-// for example, if the template was { color: 'blue' },
-// this function would apply node.style.color = 'blue'.
-function applyStyle(node, template) {
-    if (template.hasOwnProperty('color'))
-        node.style.color = template.color;
-    if (template.hasOwnProperty('backgroundColor'))
-        node.style.backgroundColor = template.backgroundColor;
-    if (template.hasOwnProperty('fontWeight'))
-        node.style.fontWeight = template.fontWeight;
-}
-
-// clear all children and inner text from a DOM node
-function clearNode(node) {
-    while (node.firstChild) {
-        node.removeChild(node.firstChild);
-    }
-}
-
 // displays the 13x13 map in the circular view style.
 function displayMap(map) {
 
@@ -186,5 +166,24 @@ function displayMap(map) {
             }
             return borderClasses;
         }
+    }
+}
+
+// takes a DOM node and applies currently supported styles to it.
+// for example, if the template was { color: 'blue' },
+// this function would apply node.style.color = 'blue'.
+function applyStyle(node, template) {
+    if (template.hasOwnProperty('color'))
+        node.style.color = template.color;
+    if (template.hasOwnProperty('backgroundColor'))
+        node.style.backgroundColor = template.backgroundColor;
+    if (template.hasOwnProperty('fontWeight'))
+        node.style.fontWeight = template.fontWeight;
+}
+
+// clear all children and inner text from a DOM node
+function clearNode(node) {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild);
     }
 }

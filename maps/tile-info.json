@@ -40,6 +40,7 @@
 		"description": "wooden sword",
 		"message": "wooden sword",
 		"passable": true,
+		"pickup": true,
 		"text": "s",
 		"style": {
 			"backgroundColor": "#a4988d",
