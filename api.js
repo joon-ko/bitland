@@ -30,7 +30,6 @@ router.get('/tile', (req, res) => {
 router.post('/move', (req, res) => {
 	const { direction } = req.body;
 	const query = { username: req.user.username };
-
 	User.findOne(query, (err, user) => {
 		let proposedX = user.x; let proposedY = user.y;
 		switch (direction) {
@@ -70,9 +69,7 @@ router.post('/move', (req, res) => {
 router.get('/map', (req, res) => {
 	User.findOne({ username: req.user.username }, (err, user) => {
 		if (err) console.log(err);
-
 		const x = user.x; const y = user.y;
-
 		// build the array
 		let resArray = [];
 		for (let i = x-6; i <= x+6; i++) {
@@ -90,6 +87,16 @@ router.get('/map', (req, res) => {
 			resArray.push(line);
 		}
 		res.send(resArray);
+	});
+});
+
+// get current inventory as a 10-element array
+router.get('/inventory', (req, res) => {
+	User.findOne({ username: req.user.username }, (err, user) => {
+		if (err) console.log(err);
+		let inventoryArray = user.inventory.map((itemSlot) => TILE_INFO[itemSlot.item.name]);
+		if (inventoryArray.length != 10) console.log('warning: inventory does not have 10 slots!');
+		res.send(inventoryArray);
 	});
 });
 

@@ -1,117 +1,135 @@
 #logout {
-	text-decoration: none;
-	position: absolute;
-	top: 0px;
-	right: 0px;
-	margin: 10px;
-	cursor: pointer;
-	font-weight: bold;
-	color: black;
+    text-decoration: none;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    margin: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    color: black;
 }
 
 #logout:hover {
-	color: green;
+    color: green;
 }
 
 #container {
-	background-color: #c1e1ec;
-	height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
+    background-color: #c1e1ec;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #map {
-	background-color: white;
-	display: grid;
-	grid-template-rows: repeat(13, 25px);
-	grid-template-columns: repeat(13, 25px);
-	height: 325px;
-	width: 325px;
+    background-color: white;
+    display: grid;
+    grid-template-rows: repeat(13, 25px);
+    grid-template-columns: repeat(13, 25px);
+    height: 325px;
+    width: 325px;
 }
 
 .tile {
-	box-sizing: border-box;
-	text-align: center;
-	vertical-align: middle;
-	border: 1px solid #dbdbdb;
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #dbdbdb;
 
-	/* disable text highlighting */
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
-	cursor: default;
 }
 
 .invisible {
-	border: none;
-	background-color: #c1e1ec;
+    border: none;
+    background-color: #c1e1ec;
 }
 
 .border-l {
-	box-sizing: content-box;
-	border-left: 2px solid #bdbdbd;
+    box-sizing: content-box;
+    border-left: 2px solid #bdbdbd;
 }
 
 .border-t {
-	box-sizing: content-box;
-	border-top: 2px solid #bdbdbd;
+    box-sizing: content-box;
+    border-top: 2px solid #bdbdbd;
 }
 
 .border-r {
-	box-sizing: content-box;
-	border-right: 2px solid #bdbdbd;
+    box-sizing: content-box;
+    border-right: 2px solid #bdbdbd;
 }
 
 .border-b {
-	box-sizing: content-box;
-	border-bottom: 2px solid #bdbdbd;
+    box-sizing: content-box;
+    border-bottom: 2px solid #bdbdbd;
 }
 
 #menu {
-	background-color: white;
+    background-color: white;
     width: 350px;
     height: 150px;
     border: 1px solid black;
     margin: 50px auto;
+
     display: grid;
     grid-template-rows: 25px auto;
     grid-template-columns: 25px 25px 25px auto;
 
-    /* disable text highlighting */
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
-	cursor: default;
 }
 
 .menu-item {
-	text-align: center;
-	vertical-align: middle;
-	box-sizing: border-box;
-	border-bottom: 1px solid black;
-	border-right: 1px solid black;
+    text-align: center;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
 }
 
 .selected {
-	background-color: #d3d3d3;
+    background-color: #d3d3d3;
 }
 
 #menu-display {
-	margin: 7px 7px;
-	grid-column: 1 / 5;
-	grid-row: 2 / 3;
+    grid-column: 1 / 5;
+    grid-row: 2 / 3;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.inventory-slot {
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid black;
+    border-radius: 3px;
+
+    height: 25px;
+    width: 25px;
+    margin: 5px;
+}
+
+#log-div {
+    margin: 7px 7px;
+    text-align: left;
+    vertical-align: top;
 }
 
 html, body {
-	margin: 0;
-	height: 100%;
-	overflow: hidden;
-	font-family: 'Source Code Pro', monospace;
-	font-weight: lighter;
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Source Code Pro', monospace;
+    font-weight: lighter;
+
+    /* disable text highlighting */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    cursor: default;
 }

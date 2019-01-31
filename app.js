@@ -59,9 +59,7 @@ User.findOne({ username: 'test' }, (err, user) => {
 	} else {
 		const testUser = new User({
 			username: 'test',
-			password: 'test123',
-			x: 1,
-			y: 1
+			password: 'test123'
 		});
 		testUser.save().then(() => console.log('test user created'));
 	}

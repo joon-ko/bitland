@@ -2,47 +2,48 @@
 	"w": {
 		"description": "default wall",
 		"passable": false,
-		"display": {
+		"text": "w",
+		"style": {
 			"backgroundColor": "#202020",
-			"color": "white",
-			"text": "w"
+			"color": "white"
 		}
 	},
 	" ": {
 		"description": "default empty space",
 		"passable": true,
-		"display": {
+		"text": " ",
+		"style": {
 			"backgroundColor": "white",
-			"color": "black",
-			"text": " "
-		}
-	},
-	".": {
-		"description": "empty space",
-		"passable": true,
-		"display": {
-			"backgroundColor": "white",
-			"color": "black",
-			"text": "."
+			"color": "black"
 		}
 	},
 	"p": {
 		"description": "test player",
 		"passable": true,
-		"display": {
+		"text": "p",
+		"style": {
 			"backgroundColor": "white",
-			"color": "black",
-			"text": "p"
+			"color": "black"
 		}
 	},
 
-	"s": {
-		"description": "basic sword",
+	".": {
+		"description": "empty item",
 		"passable": true,
-		"display": {
-			"backgroundColor": "#D63232",
-			"color": "white",
-			"text": "s"
+		"text": ".",
+		"style": {
+			"backgroundColor": "white",
+			"color": "black"
+		}
+	},
+	"s": {
+		"description": "wooden sword",
+		"passable": true,
+		"text": "s",
+		"style": {
+			"backgroundColor": "#a4988d",
+			"color": "#3f250b",
+			"fontWeight": "bold"
 		}
 	},
 
@@ -50,30 +51,40 @@
 		"description": "unique message",
 		"message": "use the <strong>arrow</strong> keys to move.",
 		"passable": true,
-		"display": {
+		"text": "M",
+		"style": {
 			"backgroundColor": "#d3d3d3",
-			"color": "black",
-			"text": "M"
+			"color": "black"
 		}
 	},
 	"Á": {
 		"description": "unique message",
 		"message": "the center circle is your <strong>map</strong>. <span style='color: blue;'><strong>bitland</strong></span> is made up of <strong>tiles</strong>. some tiles are passable (like this message tile), and some (like the wall tiles) are not.",
 		"passable": true,
-		"display": {
+		"text": "M",
+		"style": {
 			"backgroundColor": "#d3d3d3",
-			"color": "black",
-			"text": "M"
+			"color": "black"
 		}
 	},
 	"Â": {
 		"description": "unique message",
 		"message": "this box is your <strong>menu</strong>. you can access this log window at any time by pressing the <strong>l</strong> key.",
 		"passable": true,
-		"display": {
+		"text": "M",
+		"style": {
 			"backgroundColor": "#d3d3d3",
-			"color": "black",
-			"text": "M"
+			"color": "black"
+		}
+	},
+	"Ã": {
+		"description": "unique message",
+		"message": "some tiles are items that can be picked up. to pick up items, stand on top of them and press the <strong>p</strong> key.",
+		"passable": true,
+		"text": "M",
+		"style": {
+			"backgroundColor": "#d3d3d3",
+			"color": "black"
 		}
 	}
 }
