@@ -4,7 +4,9 @@ const fs = require('fs');
 const axios = require('axios');
 
 const User = require('./models/user');
-const world = require('./models/world');
+const worldModels = require('./models/world');
+const World = worldModels.World;
+const Tile = worldModels.Tile;
 
 const TILE_INFO = require('./maps/tile-info.json');
 
@@ -18,44 +20,41 @@ setInterval(() => {
     });
 }, 1000);
 
-// loading map
-// let mapArray = [];
-// fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
-//  if (err) console.log(err);
-//  let lines = data.split(/[\r\n]+/g);
-//  lines.forEach((line) => {
-//      mapArray.push(line.split(''));
-//  });
-//  console.log('map loaded.');
-
-//  const world = require('./models/world')
-
-//  let worldArray = [];
-//  for (let i=0; i<mapArray.length; i++) {
-//      let row = [];
-//      for (let j=0; j<mapArray[0].length; j++) {
-//          row.push(new world.WorldCoordinate({
-//              entities: new world.Tile({
-//                  name: mapArray[i][j],
-//                  tileInfo: TILE_INFO[mapArray[i][j]]
-//              })
-//          }));
-//      }
-//      worldArray.push(row);
-//  }
-//  const tutorialWorld = new world.World({
-//      name: 'tutorial',
-//      rows: mapArray.length,
-//      cols: mapArray[0].length,
-//      world: worldArray
-//  });
-//  tutorialWorld.save().then(() => console.log('tutorial world saved'));
-
-// });
+// turn the ASCII art of the tutorial map into an actual world state
+let mapArray = [];
+fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
+    if (err) console.log(err);
+    let lines = data.split(/[\r\n]+/g);
+    lines.forEach((line) => {
+        mapArray.push(line.split(''));
+    });
+    console.log('map loaded.');
+    let worldArray = [];
+    for (let i=0; i<mapArray.length; i++) {
+        let row = [];
+        for (let j=0; j<mapArray[0].length; j++) {
+            row.push(new Tile({
+                name: mapArray[i][j],
+                tileInfo: TILE_INFO[mapArray[i][j]]
+            }));
+        }
+        worldArray.push(row);
+    }
+    World.findOne({ name: 'tutorial' }, (err, worldDocument) => {
+        const worldState = { name: 'tutorial', world: worldArray };
+        if (worldDocument) {
+            World.update(worldState);
+            console.log('world state updated.');
+        } else {
+            World.create(worldState);
+            console.log('world state created.');
+        }
+    });
+});
 
 // shorthand for querying the db for a world document and returning its world array
 function getWorld(worldName, callback) {
-    world.World.findOne({ name: worldName }, (err, worldDocument) => {
+    World.findOne({ name: worldName }, (err, worldDocument) => {
         if (err) console.log(err);
         if (worldDocument) return callback(worldDocument.world);
     });
@@ -65,7 +64,7 @@ function getWorld(worldName, callback) {
 router.get('/tile', (req, res) => {
     User.findOne({ username: req.user.username }, (err, user) => {
         const x = user.x; const y = user.y;
-        res.send(tutorialWorld[x][y].entities[0].tileInfo);
+        res.send(tutorialWorld[x][y].tileInfo);
     })
 });
 
@@ -92,7 +91,7 @@ router.post('/move', (req, res) => {
                 console.log('invalid move direction');
         }
         // determine if tile is passable, and if it's not, stop movement
-        tileInfo = tutorialWorld[proposedX][proposedY].entities[0].tileInfo;
+        tileInfo = tutorialWorld[proposedX][proposedY].tileInfo;
         if (tileInfo.passable) {
             User.findOneAndUpdate(
                 query,
@@ -123,7 +122,7 @@ router.get('/map', (req, res) => {
                 } else if (i === x && j === y) {
                     line.push(TILE_INFO['p']);
                 } else {
-                    line.push(tutorialWorld[i][j].entities[0].tileInfo);
+                    line.push(tutorialWorld[i][j].tileInfo);
                 }
             }
             resArray.push(line);

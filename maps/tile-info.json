@@ -38,6 +38,7 @@
 	},
 	"s": {
 		"description": "wooden sword",
+		"message": "wooden sword",
 		"passable": true,
 		"text": "s",
 		"style": {
