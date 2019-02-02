@@ -11,7 +11,7 @@ const Tile = worldModels.Tile;
 const TILE_INFO = require('./maps/tile-info.json');
 
 // true: reset the world state permanently. false: world loads as normal.
-const RESET_WORLD_STATE = true;
+const RESET_WORLD_STATE = false;
 
 // querying the entire world map every time we want to do anything is very slow...
 // new strategy: the server stores a snapshot of the world every second in a local variable
@@ -19,10 +19,17 @@ const RESET_WORLD_STATE = true;
 // examples of world updates: item pickup/dropping, ......
 var tutorialWorld;
 setInterval(() => {
-    getWorld('tutorial', (world) => {
-        tutorialWorld = world;
+    World.findOne({ name: 'tutorial' }, (err, worldDocument) => {
+        if (err) console.log(err);
+        tutorialWorld = worldDocument;
     });
 }, 1000);
+
+// turn xy coordinates of a 2d array into a flattened array index
+// cols: number of columns in 2d array
+function flatIndex(x, y, cols) {
+    return (x * cols) + y;
+}
 
 // turn the ASCII art of the tutorial map into an actual world state.
 let mapArray = [];
@@ -33,27 +40,36 @@ fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
         mapArray.push(line.split(''));
     });
     console.log('map loaded.');
+    // strategy: flattening 2D array to a single array since mongo dislikes 2D arrays
     let worldArray = [];
     for (let i=0; i<mapArray.length; i++) {
-        let row = [];
         for (let j=0; j<mapArray[0].length; j++) {
-            row.push(new Tile({
+            worldArray.push(new Tile({
                 name: mapArray[i][j],
                 tileInfo: TILE_INFO[mapArray[i][j]]
             }));
         }
-        worldArray.push(row);
     }
     World.findOne({ name: 'tutorial' }, (err, worldDocument) => {
         if (worldDocument && RESET_WORLD_STATE) {
             World.deleteOne({ name: 'tutorial' }, (err) => {
                 console.log('world state deleted.');
-                World.create({ name: 'tutorial', world: worldArray });
+                World.create({
+                    name: 'tutorial',
+                    rows: mapArray.length,
+                    cols: mapArray[0].length,
+                    world: worldArray
+                });
                 console.log('world state recreated.');
             });
         }
         else if (!worldDocument) {
-            World.create({ name: 'tutorial', world: worldArray });
+            World.create({
+                name: 'tutorial',
+                rows: mapArray.length,
+                cols: mapArray[0].length,
+                world: worldArray
+            });
             console.log('world state created.');
         }
         else {
@@ -63,10 +79,10 @@ fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
 });
 
 // shorthand for querying the db for a world document and returning its world array
-function getWorld(worldName, callback) {
+function getWorldDocument(worldName, callback) {
     World.findOne({ name: worldName }, (err, worldDocument) => {
         if (err) console.log(err);
-        if (worldDocument) callback(worldDocument.world);
+        if (worldDocument) callback(worldDocument);
     });
 }
 
@@ -74,7 +90,8 @@ function getWorld(worldName, callback) {
 router.get('/tile', (req, res) => {
     User.findOne({ username: req.user.username }, (err, user) => {
         const x = user.x; const y = user.y;
-        res.send(tutorialWorld[x][y].tileInfo);
+        const index = flatIndex(x, y, tutorialWorld.cols);
+        res.send(tutorialWorld.world[index].tileInfo);
     });
 });
 
@@ -101,7 +118,8 @@ router.post('/move', (req, res) => {
                 console.log('invalid move direction');
         }
         // determine if tile is passable, and if it's not, stop movement
-        tileInfo = tutorialWorld[proposedX][proposedY].tileInfo;
+        const index = flatIndex(proposedX, proposedY, tutorialWorld.cols);
+        tileInfo = tutorialWorld.world[index].tileInfo;
         if (tileInfo.passable) {
             User.findOneAndUpdate(
                 query,
@@ -126,12 +144,13 @@ router.get('/map', (req, res) => {
             let line = [];
             for (let j = y-6; j <= y+6; j++) {
                 // if out of bounds, fill with blank
-                if (i < 0 || j < 0 || i >= tutorialWorld.length || j >= tutorialWorld[0].length) {
+                if (i < 0 || j < 0 || i >= tutorialWorld.rows || j >= tutorialWorld.cols) {
                     line.push(TILE_INFO[' ']);
                 } else if (i === x && j === y) {
                     line.push(TILE_INFO['p']);
                 } else {
-                    line.push(tutorialWorld[i][j].tileInfo);
+                    const index = flatIndex(i, j, tutorialWorld.cols);
+                    line.push(tutorialWorld.world[index].tileInfo);
                 }
             }
             resArray.push(line);

@@ -8,7 +8,9 @@ const TileSchema = new Schema({
 
 const WorldSchema = new Schema({
 	name  : { type: String, index: { unique: true } },
-	world : [[TileSchema]]
+	rows  : Number,
+	cols  : Number,
+	world : [TileSchema]
 });
 
 module.exports = {
