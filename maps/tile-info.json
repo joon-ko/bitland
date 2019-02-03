@@ -1,5 +1,6 @@
 {
 	"w": {
+		"code": "w",
 		"description": "wall",
 		"passable": false,
 		"text": "w",
@@ -9,6 +10,7 @@
 		}
 	},
 	" ": {
+		"code": " ",
 		"description": "empty",
 		"passable": true,
 		"text": " ",
@@ -18,6 +20,7 @@
 		}
 	},
 	"p": {
+		"code": "p",
 		"description": "test player",
 		"passable": true,
 		"text": "p",
@@ -28,6 +31,7 @@
 	},
 
 	".": {
+		"code": ".",
 		"description": "empty item",
 		"passable": true,
 		"text": ".",
@@ -37,7 +41,9 @@
 		}
 	},
 	"s": {
+		"code": "s",
 		"description": "wooden sword",
+		"message": "<strong>z:</strong> pick up",
 		"passable": true,
 		"pickup": true,
 		"text": "s",
@@ -45,10 +51,14 @@
 			"backgroundColor": "#a4988d",
 			"color": "#3f250b",
 			"fontWeight": "bold"
+		},
+		"actions": {
+			"z": "pick up"
 		}
 	},
 
 	"À": {
+		"code": "À",
 		"description": "message",
 		"message": "use the <strong>arrow</strong> keys to move.",
 		"passable": true,
@@ -59,6 +69,7 @@
 		}
 	},
 	"Á": {
+		"code": "Á",
 		"description": "message",
 		"message": "the center circle is your <strong>map</strong>. <span style='color: blue;'><strong>bitland</strong></span> is made up of <strong>tiles</strong>. some tiles are passable (like this message tile), and some (like the wall tiles) are not.",
 		"passable": true,
@@ -69,8 +80,9 @@
 		}
 	},
 	"Â": {
+		"code": "Â",
 		"description": "message",
-		"message": "the <strong>log</strong> tab shows the tile you're currently on and shows all actions available on said tile. access the log tab with the <strong>a</strong> key.",
+		"message": "the <strong>info</strong> tab shows the tile you're currently on and shows all actions available on said tile. access the info tab with the <strong>a</strong> key.",
 		"passable": true,
 		"text": "M",
 		"style": {
@@ -79,6 +91,7 @@
 		}
 	},
 	"Ã": {
+		"code": "Ã",
 		"description": "message",
 		"message": "some tiles are items that can be picked up by standing on the item tile and performing the <strong>pick up</strong> action.",
 		"passable": true,

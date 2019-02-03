@@ -30,10 +30,15 @@ document.addEventListener('keydown', (e) => {
                 const inventoryTab = document.getElementById('inventory');
                 selectMenuTab(inventoryTab);
                 break;
-            case 65: // a (LOG)
-                displayLog();
-                const logTab = document.getElementById('log');
-                selectMenuTab(logTab);
+            case 65: // a (INFO)
+                displayInfo();
+                const infoTab = document.getElementById('info');
+                selectMenuTab(infoTab);
+                break;
+
+            // ZXCV commands (special actions)
+            case 90: // z
+                actionZ();
                 break;
         }
     }
@@ -43,10 +48,7 @@ document.addEventListener('keyup', (e) => {
 });
 
 function move(dir) {
-    axios.post('/api/move', { direction: dir })
-        .then((res) => {
-            update();
-        });
+    axios.post('/api/move', { direction: dir }).then((res) => update());
 }
 
 // general-purpose update of the screen, usually after movement
@@ -57,7 +59,7 @@ function update() {
             displayMap(res.data);
             const selected = document.getElementsByClassName('selected')[0];
             if (selected.id === 'inventory') displayInventory();
-            else if (selected.id === 'log') displayLog();
+            else if (selected.id === 'info') displayInfo();
         });
 }
 
@@ -99,34 +101,54 @@ function displayInventory() {
         });
 }
 
-// displays the current log message to the menu display
-function displayLog() {
+// displays the current tile and any messages to the menu display
+function displayInfo() {
     axios.get('/api/tile')
         .then((res) => {
             const menuDisplay = document.getElementById('menu-display');
             clearNode(menuDisplay);
             const tileInfo = res.data;
-            // construct log display div
-            const logDiv = document.createElement('div');
-            logDiv.id = 'log-div';
+            // construct info display div
+            const infoDiv = document.createElement('div');
+            infoDiv.id = 'info-div';
             const top = document.createElement('div');
-            top.id = 'log-div-top';
+            top.id = 'info-div-top';
             const tileIcon = document.createElement('div');
-            tileIcon.id = 'log-div-tile';
+            tileIcon.id = 'info-div-tile';
             tileIcon.innerHTML = tileInfo.text;
             applyStyle(tileIcon, tileInfo.style);
             top.appendChild(tileIcon);
             const tileDescription = document.createElement('div');
-            tileDescription.id = 'log-div-description';
+            tileDescription.id = 'info-div-description';
             tileDescription.innerHTML = tileInfo.description;
             top.appendChild(tileDescription);
-            logDiv.appendChild(top);
+            infoDiv.appendChild(top);
             const message = document.createElement('div');
-            message.id = 'log-div-message';
+            message.id = 'info-div-message';
             message.innerHTML = (tileInfo.message ? tileInfo.message : '');
-            logDiv.appendChild(message);
-            menuDisplay.appendChild(logDiv);
+            infoDiv.appendChild(message);
+            menuDisplay.appendChild(infoDiv);
         });
+}
+
+// attempts to do the action associated with the Z key
+function actionZ() {
+    axios.get('/api/tile')
+        .then((res) => {
+            const tileInfo = res.data;
+            if (tileInfo.actions && tileInfo.actions.z) {
+                handleAction(tileInfo.actions.z);
+            }
+        });
+}
+
+// handle a valid action
+function handleAction(action) {
+    switch (action) {
+        case "pick up":
+            axios.post('/api/pickup', {}).then((res) => update());
+            break;
+    }
 }
 
 // displays the 13x13 map in the circular view style.

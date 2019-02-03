@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
-    name     : { type: String, default: "."},
-    maxCount : { type: Number, default: 1 }
+    name     : { type: String, default: "."}
 });
 
 const Item = mongoose.model('Item', ItemSchema);

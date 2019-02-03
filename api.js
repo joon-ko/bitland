@@ -14,7 +14,7 @@ const TILE_INFO = require('./maps/tile-info.json');
 const RESET_WORLD_STATE = false;
 
 // querying the entire world map every time we want to do anything is very slow...
-// new strategy: the server stores a snapshot of the world every second in a local variable
+// new strategy: the server stores a snapshot of the world every half second in a local variable
 // that can be accessed very quickly. only world updates (not world gets) talk to db.
 // examples of world updates: item pickup/dropping, ......
 var tutorialWorld;
@@ -23,7 +23,7 @@ setInterval(() => {
         if (err) console.log(err);
         tutorialWorld = worldDocument;
     });
-}, 1000);
+}, 500);
 
 // turn xy coordinates of a 2d array into a flattened array index
 // cols: number of columns in 2d array
@@ -153,5 +153,46 @@ router.get('/inventory', (req, res) => {
     if (inventoryArray.length != 10) console.log('warning: inventory does not have 10 slots!');
     res.send(inventoryArray);
 });
+
+// pick up item player is currently standing on
+router.post('/pickup', (req, res) => {
+    const x = req.user.x; const y = req.user.y;
+    const index = flatIndex(x, y, tutorialWorld.cols);
+    const tileInfo = tutorialWorld.world[index].tileInfo;
+    const tileId = tutorialWorld.world[index]._id;
+    const inv = req.user.inventory;
+    const invIndex = openInventorySlot(inv);
+    if (invIndex === -1) {
+        res.end(); return; // no inv space!
+    }
+    const slotId = inv[invIndex]._id;
+    // remove item from world state
+    World.updateOne(
+        { 'world._id' : tileId },
+        {$set: {
+            'world.$.name' : ' ',
+            'world.$.tileInfo' : TILE_INFO[' '] 
+        } },
+        (err, doc) => {
+            // add item to inventory
+            User.updateOne(
+                { 'inventory._id' : slotId },
+                {
+                    $set: { 'inventory.$.item.name' : tileInfo.code },
+                    $inc: { 'inventory.$.count' : 1 }
+                },
+                // give the server enough time to get a new local snapshot
+                (err, doc) => { setTimeout(() => { res.end(); }, 500) }
+            );
+        }
+    );
+});
+
+function openInventorySlot(inventory) {
+    for (let i=0; i<10; i++) {
+        if (inventory[i].item.name === '.') return i;
+    }
+    return -1;
+}
 
 module.exports = router;
