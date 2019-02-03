@@ -3,15 +3,12 @@ const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
     name     : { type: String, default: "."},
-    attack   : { type: Number, default: 0 },
-    strength : { type: Number, default: 0 },
     maxCount : { type: Number, default: 1 }
 });
 
 const Item = mongoose.model('Item', ItemSchema);
 
 const InventorySpaceSchema = new Schema({
-    filled : { type: Boolean, default: false },
     item   : { type: ItemSchema },
     count  : { type: Number, default: 0 }
 });
@@ -28,7 +25,8 @@ const UserSchema = new Schema({
     password  : { type: String, required: true },
     x         : { type: Number, default: 1 },
     y         : { type: Number, default: 1 },
-    inventory : { type: [InventorySpaceSchema], default: defaultInventory }
+    inventory : { type: [InventorySpaceSchema], default: defaultInventory },
+    world     : { type: String, default: 'tutorial' }
 });
 
 UserSchema.methods.verifyPassword = function(candidatePassword) {

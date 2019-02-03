@@ -78,95 +78,80 @@ fs.readFile(__dirname + '/maps/tutorial1', 'utf8', (err, data) => {
     });
 });
 
-// shorthand for querying the db for a world document and returning its world array
-function getWorldDocument(worldName, callback) {
-    World.findOne({ name: worldName }, (err, worldDocument) => {
-        if (err) console.log(err);
-        if (worldDocument) callback(worldDocument);
-    });
-}
-
 // get current tile player is standing on
 router.get('/tile', (req, res) => {
-    User.findOne({ username: req.user.username }, (err, user) => {
-        const x = user.x; const y = user.y;
-        const index = flatIndex(x, y, tutorialWorld.cols);
-        res.send(tutorialWorld.world[index].tileInfo);
-    });
+    const x = req.user.x; const y = req.user.y;
+    const index = flatIndex(x, y, tutorialWorld.cols);
+    res.send(tutorialWorld.world[index].tileInfo);
+});
+
+// get current world name player is in
+router.get('/world', (req, res) => {
+    res.send(req.user.world);
 });
 
 // move the player
 router.post('/move', (req, res) => {
     const { direction } = req.body;
-    const query = { username: req.user.username };
-    User.findOne(query, (err, user) => {
-        let proposedX = user.x; let proposedY = user.y;
-        switch (direction) {
-            case 'up':
-                proposedX -= 1;
-                break;
-            case 'down':
-                proposedX += 1;
-                break;
-            case 'left':
-                proposedY -= 1;
-                break;
-            case 'right':
-                proposedY += 1;
-                break;
-            default:
-                console.log('invalid move direction');
-        }
-        // determine if tile is passable, and if it's not, stop movement
-        const index = flatIndex(proposedX, proposedY, tutorialWorld.cols);
-        tileInfo = tutorialWorld.world[index].tileInfo;
-        if (tileInfo.passable) {
-            User.findOneAndUpdate(
-                query,
-                { $set: { 'x': proposedX, 'y': proposedY } },
-                { new: true },
-                (err, user) => res.end()
-            );
-        } else {
-            res.end();
-        }
-    });
+    let proposedX = req.user.x; let proposedY = req.user.y;
+    switch (direction) {
+        case 'up':
+            proposedX -= 1;
+            break;
+        case 'down':
+            proposedX += 1;
+            break;
+        case 'left':
+            proposedY -= 1;
+            break;
+        case 'right':
+            proposedY += 1;
+            break;
+        default:
+            console.log('invalid move direction');
+    }
+    // determine if tile is passable, and if it's not, stop movement
+    const index = flatIndex(proposedX, proposedY, tutorialWorld.cols);
+    tileInfo = tutorialWorld.world[index].tileInfo;
+    if (tileInfo.passable) {
+        User.updateOne(
+            { username: req.user.username },
+            { $set: { 'x': proposedX, 'y': proposedY } },
+            (err, raw) => res.end()
+        );
+    } else {
+        res.end();
+    }
 });
 
 // request the 13x13 2D array section of the map based on current position 
 router.get('/map', (req, res) => {
-    User.findOne({ username: req.user.username }, (err, user) => {
-        if (err) console.log(err);
-        const x = user.x; const y = user.y;
-        // build the array
-        let resArray = [];
-        for (let i = x-6; i <= x+6; i++) {
-            let line = [];
-            for (let j = y-6; j <= y+6; j++) {
-                // if out of bounds, fill with blank
-                if (i < 0 || j < 0 || i >= tutorialWorld.rows || j >= tutorialWorld.cols) {
-                    line.push(TILE_INFO[' ']);
-                } else if (i === x && j === y) {
-                    line.push(TILE_INFO['p']);
-                } else {
-                    const index = flatIndex(i, j, tutorialWorld.cols);
-                    line.push(tutorialWorld.world[index].tileInfo);
-                }
+    const x = req.user.x; const y = req.user.y;
+    // build the array
+    let resArray = [];
+    for (let i = x-6; i <= x+6; i++) {
+        let line = [];
+        for (let j = y-6; j <= y+6; j++) {
+            // if out of bounds, fill with blank
+            if (i < 0 || j < 0 || i >= tutorialWorld.rows || j >= tutorialWorld.cols) {
+                line.push(TILE_INFO[' ']);
+            } else if (i === x && j === y) {
+                line.push(TILE_INFO['p']);
+            } else {
+                const index = flatIndex(i, j, tutorialWorld.cols);
+                line.push(tutorialWorld.world[index].tileInfo);
             }
-            resArray.push(line);
         }
-        res.send(resArray);
-    });
+        resArray.push(line);
+    }
+    res.send(resArray);
 });
 
 // get current inventory as a 10-element array
 router.get('/inventory', (req, res) => {
-    User.findOne({ username: req.user.username }, (err, user) => {
-        if (err) console.log(err);
-        let inventoryArray = user.inventory.map((itemSlot) => TILE_INFO[itemSlot.item.name]);
-        if (inventoryArray.length != 10) console.log('warning: inventory does not have 10 slots!');
-        res.send(inventoryArray);
-    });
+    let inventoryArray = req.user.inventory.map((itemSlot) => TILE_INFO[itemSlot.item.name]);
+    if (inventoryArray.length != 10) console.log('warning: inventory does not have 10 slots!');
+    res.send(inventoryArray);
 });
 
 module.exports = router;

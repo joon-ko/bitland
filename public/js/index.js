@@ -25,12 +25,12 @@ document.addEventListener('keydown', (e) => {
                 break;
 
             // menu tab commands
-            case 73: // i (for INVENTORY)
+            case 83: // s (INVENTORY)
                 displayInventory();
                 const inventoryTab = document.getElementById('inventory');
                 selectMenuTab(inventoryTab);
                 break;
-            case 76: // l (for LOG)
+            case 65: // a (LOG)
                 displayLog();
                 const logTab = document.getElementById('log');
                 selectMenuTab(logTab);
@@ -53,6 +53,7 @@ function move(dir) {
 function update() {
     axios.get('/api/map')
         .then((res) => {
+            displayWorldName();
             displayMap(res.data);
             const selected = document.getElementsByClassName('selected')[0];
             if (selected.id === 'inventory') displayInventory();
@@ -66,6 +67,16 @@ function selectMenuTab(tab) {
     const selected = document.getElementsByClassName('selected')[0];
     selected.classList.remove('selected');
     tab.classList.add('selected');
+}
+
+// displays the current world name above the map
+function displayWorldName() {
+    const worldNameDiv = document.getElementById('world-name');
+    axios.get('/api/world')
+        .then((res) => {
+            const worldName = res.data;
+            worldNameDiv.innerHTML = worldName;
+        });
 }
 
 // displays the user's inventory to the menu display
@@ -98,26 +109,36 @@ function displayLog() {
             // construct log display div
             const logDiv = document.createElement('div');
             logDiv.id = 'log-div';
-            logDiv.innerHTML = (tileInfo.message ? tileInfo.message : 'tutorial');
+            const top = document.createElement('div');
+            top.id = 'log-div-top';
+            const tileIcon = document.createElement('div');
+            tileIcon.id = 'log-div-tile';
+            tileIcon.innerHTML = tileInfo.text;
+            applyStyle(tileIcon, tileInfo.style);
+            top.appendChild(tileIcon);
+            const tileDescription = document.createElement('div');
+            tileDescription.id = 'log-div-description';
+            tileDescription.innerHTML = tileInfo.description;
+            top.appendChild(tileDescription);
+            logDiv.appendChild(top);
+            const message = document.createElement('div');
+            message.id = 'log-div-message';
+            message.innerHTML = (tileInfo.message ? tileInfo.message : '');
+            logDiv.appendChild(message);
             menuDisplay.appendChild(logDiv);
         });
 }
 
 // displays the 13x13 map in the circular view style.
 function displayMap(map) {
-
-    const container = document.getElementById('container');
-    const oldMapDiv = document.getElementById('map');
-    if (oldMapDiv) container.removeChild(oldMapDiv);
-    const mapDiv = document.createElement('div');
-    mapDiv.id = 'map';
+    const mapDiv = document.getElementById('map');
+    clearNode(mapDiv);
     for (let i = 0; i < map.length; i++) {
         for (let j = 0; j < map[0].length; j++) {
             const tile = constructTile(map, i, j);
             mapDiv.appendChild(tile);
         }
     }
-    container.insertBefore(mapDiv, document.getElementById('menu'));
 
     // create the tile div
     function constructTile(map, i, j) {

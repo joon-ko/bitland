@@ -1,6 +1,6 @@
 {
 	"w": {
-		"description": "default wall",
+		"description": "wall",
 		"passable": false,
 		"text": "w",
 		"style": {
@@ -9,7 +9,7 @@
 		}
 	},
 	" ": {
-		"description": "default empty space",
+		"description": "empty",
 		"passable": true,
 		"text": " ",
 		"style": {
@@ -38,7 +38,6 @@
 	},
 	"s": {
 		"description": "wooden sword",
-		"message": "wooden sword",
 		"passable": true,
 		"pickup": true,
 		"text": "s",
@@ -50,7 +49,7 @@
 	},
 
 	"À": {
-		"description": "unique message",
+		"description": "message",
 		"message": "use the <strong>arrow</strong> keys to move.",
 		"passable": true,
 		"text": "M",
@@ -60,7 +59,7 @@
 		}
 	},
 	"Á": {
-		"description": "unique message",
+		"description": "message",
 		"message": "the center circle is your <strong>map</strong>. <span style='color: blue;'><strong>bitland</strong></span> is made up of <strong>tiles</strong>. some tiles are passable (like this message tile), and some (like the wall tiles) are not.",
 		"passable": true,
 		"text": "M",
@@ -70,8 +69,8 @@
 		}
 	},
 	"Â": {
-		"description": "unique message",
-		"message": "this box is your <strong>menu</strong>. you can access this log window at any time by pressing the <strong>l</strong> key.",
+		"description": "message",
+		"message": "the <strong>log</strong> tab shows the tile you're currently on and shows all actions available on said tile. access the log tab with the <strong>a</strong> key.",
 		"passable": true,
 		"text": "M",
 		"style": {
@@ -80,8 +79,8 @@
 		}
 	},
 	"Ã": {
-		"description": "unique message",
-		"message": "some tiles are items that can be picked up. to pick up items, stand on top of them and press the <strong>p</strong> key.",
+		"description": "message",
+		"message": "some tiles are items that can be picked up by standing on the item tile and performing the <strong>pick up</strong> action.",
 		"passable": true,
 		"text": "M",
 		"style": {
