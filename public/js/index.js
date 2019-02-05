@@ -90,13 +90,25 @@ function displayInventory() {
             const inventoryArray = res.data;
             // construct the inventory slot divs
             for (let i=0; i<10; i++) {
+                const invSlotContainer = document.createElement('div');
+                invSlotContainer.className = 'inventory-slot-container';
+
                 const invSlot = document.createElement('div');
                 const itemInfo = inventoryArray[i];
                 invSlot.className = 'inventory-slot';
                 // the '.' tile represents an empty item, so display with a blank
                 invSlot.innerHTML = (itemInfo.text === '.' ? ' ' : itemInfo.text);
                 applyStyle(invSlot, itemInfo.style);
-                menuDisplay.appendChild(invSlot);
+
+                invSlotContainer.appendChild(invSlot);
+
+                const invSlotNumber = document.createElement('div');
+                invSlotNumber.className = 'inventory-slot-number';
+                invSlotNumber.innerHTML = `${i}`;
+
+                invSlotContainer.appendChild(invSlotNumber);
+
+                menuDisplay.appendChild(invSlotContainer);
             }
         });
 }
