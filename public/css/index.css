@@ -85,7 +85,7 @@
     border-right: 1px solid black;
 }
 
-.selected {
+.menu-selected, .inventory-selected {
     background-color: #d3d3d3;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .inventory-slot-container {
-    height: 45px;
+    height: 50px;
     width: 25px;
     margin: 7px 7px;
 

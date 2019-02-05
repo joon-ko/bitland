@@ -8,6 +8,7 @@ update();
 document.addEventListener('keydown', (e) => {
     if (!(e.keyCode in keysDown)) {
         keysDown[e.keyCode] = true;
+        const menuSelected = document.getElementsByClassName('menu-selected')[0];
         switch (e.keyCode) {
 
             // movement commands
@@ -26,12 +27,12 @@ document.addEventListener('keydown', (e) => {
 
             // menu tab commands
             case 83: // s (INVENTORY)
-                displayInventory();
+                if (menuSelected.id !== 'inventory') displayInventory();
                 const inventoryTab = document.getElementById('inventory');
                 selectMenuTab(inventoryTab);
                 break;
             case 65: // a (INFO)
-                displayInfo();
+                if (menuSelected.id !== 'info') displayInfo();
                 const infoTab = document.getElementById('info');
                 selectMenuTab(infoTab);
                 break;
@@ -39,6 +40,38 @@ document.addEventListener('keydown', (e) => {
             // ZXCV commands (special actions)
             case 90: // z
                 actionZ();
+                break;
+
+            // inventory select commands (0-9)
+            case 49: // 1
+                if (menuSelected.id === 'inventory') selectInventorySlot(1);
+                break;
+            case 50: // 2
+                if (menuSelected.id === 'inventory') selectInventorySlot(2);
+                break;
+            case 51: // 3
+                if (menuSelected.id === 'inventory') selectInventorySlot(3);
+                break;
+            case 52: // 4
+                if (menuSelected.id === 'inventory') selectInventorySlot(4);
+                break;
+            case 53: // 5
+                if (menuSelected.id === 'inventory') selectInventorySlot(5);
+                break;
+            case 54: // 6
+                if (menuSelected.id === 'inventory') selectInventorySlot(6);
+                break;
+            case 55: // 7
+                if (menuSelected.id === 'inventory') selectInventorySlot(7);
+                break;
+            case 56: // 8
+                if (menuSelected.id === 'inventory') selectInventorySlot(8);
+                break;
+            case 57: // 9
+                if (menuSelected.id === 'inventory') selectInventorySlot(9);
+                break;
+            case 48: // 0
+                if (menuSelected.id === 'inventory') selectInventorySlot(0);
                 break;
         }
     }
@@ -57,18 +90,24 @@ function update() {
         .then((res) => {
             displayWorldName();
             displayMap(res.data);
-            const selected = document.getElementsByClassName('selected')[0];
-            if (selected.id === 'inventory') displayInventory();
-            else if (selected.id === 'info') displayInfo();
+            const menuSelected = document.getElementsByClassName('menu-selected')[0];
+            if (menuSelected.id === 'info') displayInfo();
         });
 }
 
 // get the current tab that is selected in the menu, deselect it,
 // then select a new tab
 function selectMenuTab(tab) {
-    const selected = document.getElementsByClassName('selected')[0];
-    selected.classList.remove('selected');
-    tab.classList.add('selected');
+    const selected = document.getElementsByClassName('menu-selected')[0];
+    selected.classList.remove('menu-selected');
+    tab.classList.add('menu-selected');
+}
+
+function selectInventorySlot(slot) {
+    const selected = document.getElementsByClassName('inventory-selected')[0];
+    if (selected) selected.classList.remove('inventory-selected');
+    const slotDiv = document.getElementById(`inventory-slot-${slot}`);
+    slotDiv.classList.add('inventory-selected');
 }
 
 // displays the current world name above the map
@@ -104,7 +143,9 @@ function displayInventory() {
 
                 const invSlotNumber = document.createElement('div');
                 invSlotNumber.className = 'inventory-slot-number';
-                invSlotNumber.innerHTML = `${i}`;
+                const number = (i+1) % 10;
+                invSlotNumber.id = `inventory-slot-${number}`;
+                invSlotNumber.innerHTML = `${number}`;
 
                 invSlotContainer.appendChild(invSlotNumber);
 

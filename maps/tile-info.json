@@ -100,5 +100,27 @@
 			"backgroundColor": "#d3d3d3",
 			"color": "black"
 		}
+	},
+	"Ä": {
+		"code": "Ä",
+		"description": "message",
+		"message": "view the item you picked up in your <strong>inventory</strong> with the <strong>s</strong> key.",
+		"passable": true,
+		"text": "M",
+		"style": {
+			"backgroundColor": "#d3d3d3",
+			"color": "black"
+		}
+	},
+	"Å": {
+		"code": "Å",
+		"description": "message",
+		"message": "while the inventory is visible, press the appropriate <strong>number</strong> key to select that item and perform actions on it.",
+		"passable": true,
+		"text": "M",
+		"style": {
+			"backgroundColor": "#d3d3d3",
+			"color": "black"
+		}
 	}
 }
