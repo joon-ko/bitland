@@ -92,11 +92,6 @@
 #menu-display {
     grid-column: 1 / 5;
     grid-row: 2 / 3;
-
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-evenly;
 }
 
 .inventory-slot-container {
@@ -106,6 +101,13 @@
 
     display: flex;
     flex-direction: column;
+}
+
+#inventory-slots {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
 }
 
 .inventory-slot {
@@ -124,6 +126,14 @@
     margin-top: 5px;
     text-align: center;
     vertical-align: middle;
+}
+
+#inventory-actions {
+    margin: 7px 7px;
+
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: auto auto;
 }
 
 #info-div {

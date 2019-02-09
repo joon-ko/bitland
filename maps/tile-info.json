@@ -52,8 +52,12 @@
 			"color": "#3f250b",
 			"fontWeight": "bold"
 		},
-		"actions": {
+		"worldActions": {
 			"z": "pick up"
+		},
+		"inventoryActions": {
+			"q": "drop",
+			"w": "slash"
 		}
 	},
 

@@ -39,7 +39,7 @@ document.addEventListener('keydown', (e) => {
 
             // ZXCV commands (special actions)
             case 90: // z
-                actionZ();
+                worldActionZ();
                 break;
 
             // inventory select commands (0-9)
@@ -108,6 +108,29 @@ function selectInventorySlot(slot) {
     if (selected) selected.classList.remove('inventory-selected');
     const slotDiv = document.getElementById(`inventory-slot-${slot}`);
     slotDiv.classList.add('inventory-selected');
+
+    axios.get('/api/inventory')
+    .then((res) => {
+        const inventoryArray = res.data;
+        const menuDisplay = document.getElementById('menu-display');
+        let invActions = document.getElementById('inventory-actions');
+        if (invActions) clearNode(invActions);
+        else { 
+            invActions = document.createElement('div');
+            invActions.id = 'inventory-actions';
+        }
+        const arrayIndex = (slot + 9) % 10;
+        const actions = inventoryArray[arrayIndex].inventoryActions;
+        if (actions) {
+            for (action in actions) {
+                const invAction = document.createElement('div');
+                invAction.className = 'inventory-action';
+                invAction.innerHTML = `<strong>${action}</strong>: ${actions[action]}`;
+                invActions.appendChild(invAction);
+            }
+        }
+        menuDisplay.appendChild(invActions);
+    });
 }
 
 // displays the current world name above the map
@@ -128,6 +151,8 @@ function displayInventory() {
             clearNode(menuDisplay);
             const inventoryArray = res.data;
             // construct the inventory slot divs
+            const invSlots = document.createElement('div');
+            invSlots.id = "inventory-slots";
             for (let i=0; i<10; i++) {
                 const invSlotContainer = document.createElement('div');
                 invSlotContainer.className = 'inventory-slot-container';
@@ -149,8 +174,9 @@ function displayInventory() {
 
                 invSlotContainer.appendChild(invSlotNumber);
 
-                menuDisplay.appendChild(invSlotContainer);
+                invSlots.appendChild(invSlotContainer);
             }
+            menuDisplay.appendChild(invSlots);
         });
 }
 
@@ -185,12 +211,12 @@ function displayInfo() {
 }
 
 // attempts to do the action associated with the Z key
-function actionZ() {
+function worldActionZ() {
     axios.get('/api/tile')
         .then((res) => {
             const tileInfo = res.data;
-            if (tileInfo.actions && tileInfo.actions.z) {
-                handleAction(tileInfo.actions.z);
+            if (tileInfo.worldActions && tileInfo.worldActions.z) {
+                handleAction(tileInfo.worldActions.z);
             }
         });
 }
