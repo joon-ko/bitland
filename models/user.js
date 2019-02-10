@@ -25,7 +25,11 @@ const UserSchema = new Schema({
     x         : { type: Number, default: 1 },
     y         : { type: Number, default: 1 },
     inventory : { type: [InventorySpaceSchema], default: defaultInventory },
-    world     : { type: String, default: 'tutorial' }
+    world     : { type: String, default: 'tutorial' },
+    health    : { type: Number, default: 10 },
+    attack    : { type: Number, default: 1 },
+    strength  : { type: Number, default: 1 },
+    defense   : { type: Number, default: 1 }
 });
 
 UserSchema.methods.verifyPassword = function(candidatePassword) {

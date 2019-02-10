@@ -26,18 +26,23 @@ document.addEventListener('keydown', (e) => {
                 break;
 
             // menu tab commands
-            case 83: // s (INVENTORY)
-                if (menuSelected.id !== 'inventory') displayInventory();
-                const inventoryTab = document.getElementById('inventory');
-                selectMenuTab(inventoryTab);
-                break;
             case 65: // a (INFO)
                 if (menuSelected.id !== 'info') displayInfo();
                 const infoTab = document.getElementById('info');
                 selectMenuTab(infoTab);
                 break;
+            case 83: // s (INVENTORY)
+                if (menuSelected.id !== 'inventory') displayInventory();
+                const inventoryTab = document.getElementById('inventory');
+                selectMenuTab(inventoryTab);
+                break;
+            case 68: // d (STATS)
+                if (menuSelected.id !== 'stats') displayStats();
+                const statsTab = document.getElementById('stats');
+                selectMenuTab(statsTab);
+                break;
 
-            // ZXCV commands (special actions)
+            // ZXCV commands (map actions)
             case 90: // z
                 worldActionZ();
                 break;
@@ -213,6 +218,45 @@ function displayInfo() {
             infoDiv.appendChild(message);
             menuDisplay.appendChild(infoDiv);
         });
+}
+
+// displays user stats, such as health, strength, etc. as well as current XP
+function displayStats() {
+    axios.get('/api/stats')
+    .then((res) => {
+        const stats = res.data;
+        const menuDisplay = document.getElementById('menu-display');
+        clearNode(menuDisplay);
+
+        const statsContainer = document.createElement('div');
+        statsContainer.id = 'stats-container';
+
+        const hpContainer = document.createElement('div');
+        hpContainer.id = 'health-container';
+        hpContainer.className = 'stat-container';
+        hpContainer.innerHTML = `<strong>hp:</strong> ${stats.health}`;
+        statsContainer.appendChild(hpContainer);
+
+        const attContainer = document.createElement('div');
+        attContainer.id = 'attack-container';
+        attContainer.className = 'stat-container';
+        attContainer.innerHTML = `<strong>att:</strong> ${stats.attack}`;
+        statsContainer.appendChild(attContainer);
+
+        const strContainer = document.createElement('div');
+        strContainer.id = 'strength-container';
+        strContainer.className = 'stat-container';
+        strContainer.innerHTML = `<strong>str:</strong> ${stats.strength}`;
+        statsContainer.appendChild(strContainer);
+
+        const defContainer = document.createElement('div');
+        defContainer.id = 'defense-container';
+        defContainer.className = 'stat-container';
+        defContainer.innerHTML = `<strong>def:</strong> ${stats.defense}`;
+        statsContainer.appendChild(defContainer);
+
+        menuDisplay.appendChild(statsContainer);
+    });
 }
 
 // attempts to do the action associated with the Z key

@@ -234,6 +234,15 @@ router.post('/drop', (req, res) => {
     });
 });
 
+router.get('/stats', (req, res) => {
+    res.send({
+        health: req.user.health,
+        attack: req.user.attack,
+        strength: req.user.strength,
+        defense: req.user.defense
+    });
+});
+
 function openInventorySlot(inventory) {
     for (let i=0; i<10; i++) {
         if (inventory[i].item.name === '.') return i;

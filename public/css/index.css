@@ -73,7 +73,7 @@
 
     display: grid;
     grid-template-rows: 25px auto;
-    grid-template-columns: 50px 40px auto;
+    grid-template-columns: 50px 40px 50px auto;
 
 }
 
@@ -169,6 +169,17 @@
 
 #world-name {
     margin-bottom: 30px;
+}
+
+#stats-container {
+    margin: 7px 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.stat-container {
+    height: 25px;
 }
 
 html, body {

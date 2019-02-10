@@ -45,7 +45,6 @@
 		"description": "wooden sword",
 		"message": "<strong>z:</strong> pick up",
 		"passable": true,
-		"pickup": true,
 		"text": "s",
 		"style": {
 			"backgroundColor": "#a4988d",
@@ -58,6 +57,25 @@
 		"inventoryActions": {
 			"q": "drop",
 			"w": "slash"
+		}
+	},
+	"a": {
+		"code": "a",
+		"description": "apple",
+		"message": "<strong>z:</strong> pick up",
+		"passable": true,
+		"text": "a",
+		"style": {
+			"backgroundColor": "white",
+			"color": "red",
+			"fontWeight": "bold"
+		},
+		"worldActions": {
+			"z": "pick up"
+		},
+		"inventoryActions": {
+			"q": "drop",
+			"w": "eat"
 		}
 	},
 
