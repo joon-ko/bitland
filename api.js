@@ -196,6 +196,44 @@ router.post('/pickup', (req, res) => {
     });
 });
 
+// drop item in inventory
+router.post('/drop', (req, res) => {
+    World.findOne({ _id: tutId })
+    .then((worldDoc) => {
+        const x = req.user.x; const y = req.user.y;
+        const index = flatIndex(x, y, worldDoc.cols);
+        const tileInfo = worldDoc.world[index].tileInfo;
+        const tileId = worldDoc.world[index]._id;
+        const inv = req.user.inventory;
+        const itemName = inv[req.body.index].item.name;
+        const slotId = inv[req.body.index]._id;
+
+        // only add the item if standing on empty tile
+        if (tileInfo.code === ' ') {
+            // drop item to world
+            World.updateOne(
+                { 'world._id' : tileId },
+                {$set: {
+                    'world.$.name' : itemName,
+                    'world.$.tileInfo' : TILE_INFO[itemName]
+                } }
+            )
+            .then(() => {
+                // remove item from inventory
+                User.updateOne(
+                    { 'inventory._id' : slotId },
+                    {
+                        $set: { 'inventory.$.item.name' : '.' },
+                        $inc: { 'inventory.$.count' : -1 }
+                    }
+                ).then(() => res.end());
+            });
+        } else {
+            res.end();
+        }
+    });
+});
+
 function openInventorySlot(inventory) {
     for (let i=0; i<10; i++) {
         if (inventory[i].item.name === '.') return i;

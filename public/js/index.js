@@ -42,6 +42,11 @@ document.addEventListener('keydown', (e) => {
                 worldActionZ();
                 break;
 
+            // QWER commands (inventory actions)
+            case 81: // q
+                inventoryActionQ();
+                break;
+
             // inventory select commands (0-9)
             case 49: // 1
                 if (menuSelected.id === 'inventory') selectInventorySlot(1);
@@ -221,11 +226,34 @@ function worldActionZ() {
         });
 }
 
+function inventoryActionQ() {
+    axios.get('/api/inventory')
+        .then((res) => {
+            const inventoryArray = res.data;
+            const selected = document.getElementsByClassName('inventory-selected')[0];
+            if (selected) {
+                const slot = selected.id.split('-')[2];
+                const arrayIndex = (parseInt(slot) + 9) % 10;
+                const item = inventoryArray[arrayIndex];
+                if (item.inventoryActions && item.inventoryActions.q) {
+                    handleAction(item.inventoryActions.q);
+                }
+            }
+        });
+}
+
 // handle a valid action
 function handleAction(action) {
     switch (action) {
         case "pick up":
             axios.post('/api/pickup', {}).then((res) => update());
+            break;
+        case "drop":
+            const selected = document.getElementsByClassName('inventory-selected')[0];
+            const slot = selected.id.split('-')[2];
+            const arrayIndex = (parseInt(slot) + 9) % 10;
+            console.log(arrayIndex);
+            axios.post('/api/drop', {index: arrayIndex}).then((res) => displayInventory());
             break;
     }
 }
