@@ -64,6 +64,11 @@
     border-bottom: 2px solid #bdbdbd;
 }
 
+.indicator {
+    box-sizing: content-box;
+    border: 2px solid #6aaf6a;
+}
+
 #menu {
     background-color: white;
     width: 400px;

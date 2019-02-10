@@ -1,5 +1,6 @@
 // keys that are currently held down (prevent multiple events for holding down a key)
 let keysDown = {};
+let INDICATOR = false;
 
 // initial display
 update();
@@ -44,12 +45,15 @@ document.addEventListener('keydown', (e) => {
 
             // ZXCV commands (map actions)
             case 90: // z
-                worldActionZ();
+                worldAction("z");
                 break;
 
             // QWER commands (inventory actions)
             case 81: // q
-                inventoryActionQ();
+                inventoryAction("q");
+                break;
+            case 87: // w
+                inventoryAction("w");
                 break;
 
             // inventory select commands (0-9)
@@ -102,6 +106,7 @@ function update() {
             displayMap(res.data);
             const menuSelected = document.getElementsByClassName('menu-selected')[0];
             if (menuSelected.id === 'info') displayInfo();
+            if (menuSelected.id === 'inventory') displayInventory();
         });
 }
 
@@ -114,6 +119,7 @@ function selectMenuTab(tab) {
 }
 
 function selectInventorySlot(slot) {
+    console.log(`slot: ${slot}`);
     const selected = document.getElementsByClassName('inventory-selected')[0];
     if (selected) selected.classList.remove('inventory-selected');
     const slotDiv = document.getElementById(`inventory-slot-${slot}`);
@@ -157,6 +163,8 @@ function displayWorldName() {
 function displayInventory() {
     axios.get('/api/inventory')
         .then((res) => {
+            const selected = document.getElementsByClassName('inventory-selected')[0];
+
             const menuDisplay = document.getElementById('menu-display');
             clearNode(menuDisplay);
             const inventoryArray = res.data;
@@ -177,11 +185,10 @@ function displayInventory() {
                 invSlotContainer.appendChild(invSlot);
 
                 const invSlotNumber = document.createElement('div');
-                invSlotNumber.className = 'inventory-slot-number';
+                invSlotNumber.classList.add('inventory-slot-number');
                 const number = (i+1) % 10;
                 invSlotNumber.id = `inventory-slot-${number}`;
                 invSlotNumber.innerHTML = `${number}`;
-
                 invSlotContainer.appendChild(invSlotNumber);
 
                 invSlots.appendChild(invSlotContainer);
@@ -259,31 +266,32 @@ function displayStats() {
     });
 }
 
-// attempts to do the action associated with the Z key
-function worldActionZ() {
+// attempts to perform the world action represented by key (ZXCV)
+function worldAction(key) {
     axios.get('/api/tile')
         .then((res) => {
             const tileInfo = res.data;
-            if (tileInfo.worldActions && tileInfo.worldActions.z) {
-                handleAction(tileInfo.worldActions.z);
+            if (tileInfo.worldActions && tileInfo.worldActions[key]) {
+                handleAction(tileInfo.worldActions[key]);
             }
         });
 }
 
-function inventoryActionQ() {
+// attempts to perform the inventory action represented by key (QWER)
+function inventoryAction(key) {
     axios.get('/api/inventory')
-        .then((res) => {
-            const inventoryArray = res.data;
-            const selected = document.getElementsByClassName('inventory-selected')[0];
-            if (selected) {
-                const slot = selected.id.split('-')[2];
-                const arrayIndex = (parseInt(slot) + 9) % 10;
-                const item = inventoryArray[arrayIndex];
-                if (item.inventoryActions && item.inventoryActions.q) {
-                    handleAction(item.inventoryActions.q);
-                }
+    .then((res) => {
+        const inventoryArray = res.data;
+        const selected = document.getElementsByClassName('inventory-selected')[0];
+        if (selected) {
+            const slot = selected.id.split('-')[2];
+            const arrayIndex = (parseInt(slot) + 9) % 10;
+            const item = inventoryArray[arrayIndex];
+            if (item.inventoryActions && item.inventoryActions[key]) {
+                handleAction(item.inventoryActions[key]);
             }
-        });
+        }
+    })
 }
 
 // handle a valid action
@@ -296,8 +304,13 @@ function handleAction(action) {
             const selected = document.getElementsByClassName('inventory-selected')[0];
             const slot = selected.id.split('-')[2];
             const arrayIndex = (parseInt(slot) + 9) % 10;
-            console.log(arrayIndex);
             axios.post('/api/drop', {index: arrayIndex}).then((res) => displayInventory());
+            break;
+        case "slash":
+            if (INDICATOR) { console.log("locked in location to slash"); }
+            else { console.log("select location to slash"); }
+            INDICATOR = !INDICATOR;
+            update();
             break;
     }
 }
@@ -325,7 +338,10 @@ function displayMap(map) {
             tile.innerHTML = tileInfo.text;
             applyStyle(tile, tileInfo.style);
         }
-        tileClass += calculateBorderClass(i, j);
+        // determine if border will be indicator border or normal border
+        if (INDICATOR && i === 6 && j === 6) tileClass += ' indicator';
+        else tileClass += calculateBorderClass(i, j);
+
         tile.className = tileClass;
         return tile;
 
